@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace DiagnosticScenarios.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -34,6 +34,23 @@ namespace DiagnosticScenarios.Controllers
                 Summary = Summaries[rng.Next(Summaries.Length)]
             })
             .ToArray();
+        }
+
+        [HttpGet("{date}")]
+        public WeatherForecast Get(string date){
+
+            DateTime dt = DateTime.Parse(date);
+            const int limit = 10;
+            if (dt >= DateTime.UtcNow.AddDays(limit)){
+                throw new ArgumentException($"Our systems can't predict the weather past {limit} days.");
+            }
+
+            var rng = new Random();
+            return new WeatherForecast{
+                Date = dt,
+                TemperatureC = rng.Next(50, 60),
+                Summary = "Hot summer weather!"
+            };
         }
     }
 }
